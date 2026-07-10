@@ -1,0 +1,62 @@
+# ============================================================
+# CONFIG.YAML — Cấu hình tập trung cho Bot Tín hiệu XAUUSD M5
+# Chỉnh các giá trị bên dưới, KHÔNG cần sửa code trong run.py
+# ============================================================
+
+symbol: "XAUUSD"
+
+# --- Thông tin đăng nhập MT5 (để trống nếu MT5 desktop đã mở & login sẵn) ---
+# Nếu điền đủ 3 trường dưới, run.py sẽ tự động login vào đúng tài khoản này khi khởi động.
+# Nếu để trống, run.py sẽ attach vào phiên MT5 đang mở sẵn trên máy.
+mt5:
+  login: 0                       # số tài khoản MT5, để 0 nếu không cần login lại
+  password: ""                   # mật khẩu, để trống nếu không cần login lại
+  server: ""                     # tên server broker (VD: "Exness-MT5Trial9"), để trống nếu không cần
+
+# --- Đường dẫn model đã train (copy từ Google Colab về, xem notebook/train_walk_forward.ipynb) ---
+model:
+  clf_model_path: "models/clf_model.json"
+  reg_model_path: "models/reg_model.json"
+
+# --- Bootstrap dữ liệu lịch sử khi khởi động (mục 4.1 tài liệu đặc tả) ---
+bootstrap:
+  months_back: 1                 # số tháng dương lịch trước đó cần nạp thêm khi Start
+  sequence_length: 10             # số nến đầu vào cho 1 dự đoán (khớp với lúc train)
+
+# --- Telegram ---
+telegram:
+  bot_token: "YOUR_TELEGRAM_BOT_TOKEN"
+  chat_id: "YOUR_TELEGRAM_CHAT_ID"
+
+# --- Giám sát & báo cáo định kỳ ---
+monitor:
+  heartbeat_interval_minutes: 5
+  status_report_interval_minutes: 60
+
+performance:
+  max_latency_seconds: 5
+
+# --- Bộ lọc tín hiệu (mục 3.3, 3.5, 5.1 tài liệu đặc tả) ---
+signal_filter:
+  min_confidence_threshold: 0.65      # ngưỡng xác suất tối thiểu từ clf_model để coi là tín hiệu
+  min_magnitude_multiple_of_cost: 2.0 # biên độ dự đoán (quy đổi USD) phải > N lần chi phí giao dịch
+  atr_deadzone_multiplier: 0.1        # phải khớp với giá trị đã dùng lúc train trong notebook
+
+# --- Khung Entry/TP/SL cố định cho XAUUSD (mục 3.6 tài liệu đặc tả) ---
+# 1 "giá" = 1.0 USD biến động trên XAUUSD.
+trade_setup:
+  tp_min_usd: 8.0                 # TP tối thiểu: 8 giá
+  tp_max_usd: 10.0                # TP tối đa: 10 giá
+  sl_min_usd: 3.0                 # SL tối thiểu: 3 giá
+  sl_max_usd: 5.0                 # SL tối đa: 5 giá
+  confidence_floor: 0.65          # confidence dưới mức này -> không phát tín hiệu (nên khớp min_confidence_threshold)
+  confidence_ceiling: 0.90        # confidence từ mức này trở lên -> TP lấy giá trị tối đa (10 giá)
+  atr_ratio_floor: 0.8            # biến động thấp hơn mức này -> SL lấy giá trị tối thiểu (3 giá)
+  atr_ratio_ceiling: 1.5          # biến động cao hơn mức này -> SL lấy giá trị tối đa (5 giá)
+  atr_period: 14
+  atr_average_window: 20          # số nến dùng để tính ATR trung bình làm mốc so sánh atr_ratio
+
+# --- Chi phí giao dịch ước tính (dùng khi MT5 không trả về đủ thông tin, mục 3.5) ---
+cost_estimate:
+  default_spread_usd: 0.35
+  default_slippage_usd: 0.30
