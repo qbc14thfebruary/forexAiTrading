@@ -1,0 +1,82 @@
+# ==================== CẤU HÌNH BOT TÍN HIỆU ====================
+# Tất cả tham số đều có thể điều chỉnh mà không cần sửa code.
+
+api:
+  provider: "deepseek"                    # "deepseek" | "openai" | "anthropic"
+  key: "YOUR_DEEPSEEK_API_KEY"            # API key của provider
+  base_url: "https://api.deepseek.com/v1/chat/completions"   # endpoint
+  model: "deepseek-v4-pro"                # tên model
+  max_tokens: 2048
+  temperature: 0.0                        # chỉ dùng nếu provider hỗ trợ
+  thinking_enabled: true                  # bật suy luận (deepseek-reasoner)
+  reasoning_effort: "high"               # "high" / "medium" / "low"
+  # Nếu dùng Anthropic, thêm:
+  # anthropic_version: "2023-06-01"
+
+trading:
+  symbol: "XAUUSD"            # Symbol theo MT5 Market Watch
+  timeframe: "M15"            # M1, M5, M15, M30, H1, H4, D1
+  # Có thể thêm nhiều symbol để bot chạy lần lượt hoặc song song, nhưng hiện tại chỉ hỗ trợ 1.
+
+# Thông số phân tích kỹ thuật (dùng chung cho mọi symbol)
+indicators:
+  atr_period: 14
+  rsi_period: 14
+  ema_fast: 20
+  ema_slow: 50
+  volume_avg_period: 20
+  n_candles: 60               # số nến gửi vào prompt
+
+# Thông số xác định Support/Resistance
+support_resistance:
+  lookback: 150               # số nến dùng để tìm swing point
+  swing_window: 5             # cửa sổ tìm đỉnh/đáy
+  cluster_percent: 0.08       # % để gộp các swing point gần nhau (0.05-0.10 cho crypto, 0.02-0.05 cho vàng)
+  # Gợi ý: BTCUSD 0.08, XAUUSD 0.03 (vì vàng biến động % thấp hơn)
+
+# Quản lý rủi ro
+risk_management:
+  min_risk_reward: 2.0          # R:R tối thiểu
+  max_sl_atr_multiplier: 1.2    # SL tối đa = ATR * multiplier
+  # Entry rules: entry phải cách S/R trong khoảng ATR * distance_factor
+  entry_distance_factor: 1.0    # nếu giá cách S/R > factor * ATR → HOLD # SL = ATR * multiplier (mới)
+
+# Ngưỡng xác suất
+scoring:
+  min_confidence: 60            # tổng điểm tối thiểu để giao dịch
+  # Điểm tối đa cho từng thành phần (tổng = 100)
+  max_trend_score: 25
+  max_pa_score: 25
+  max_momentum_score: 20
+  max_volume_score: 15
+  max_rr_score: 15
+
+# Telegram
+telegram:
+  token: "YOUR_TELEGRAM_BOT_TOKEN"
+  chat_id_log: "-100xxxx"         # nhóm log
+  chat_id_signal: "-100xxxx"      # nhóm tín hiệu
+  status_interval_minutes: 60     # gửi trạng thái bot mỗi X phút
+  send_hold_to_signal: false      # true nếu muốn gửi cả HOLD vào nhóm tín hiệu
+
+# File prompt template
+prompt:
+  template_path: "promtEN.txt"
+
+# Đường dẫn file log/history
+paths:
+  log_file: "bot.log"
+  signal_history_file: "signal_history.jsonl"
+
+# Các tham số có thể điều chỉnh theo symbol (nếu cần)
+symbol_overrides:
+  # Nếu muốn cài riêng cho từng symbol, khai báo ở đây
+  # Các tham số này sẽ ghi đè lên giá trị chung (chỉ định những tham số cần thay đổi)
+  XAUUSD:
+    support_resistance:
+      cluster_percent: 0.03      # Vàng biến động % thấp, cluster nhỏ hơn
+    risk_management:
+      max_sl_atr_multiplier: 4.0   # Vẫn có thể để 4 hoặc 3 tùy bạn
+      max_sl_atr_multiplier: 1.5 # Vàng có thể cho SL rộng hơn
+  BTCUSD:
+    # dùng mặc định, không cần ghi đè
