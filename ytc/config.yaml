@@ -1,0 +1,46 @@
+# ==================== CẤU HÌNH BOT YTC XAUUSD ====================
+
+api:
+  provider: "deepseek"
+  key: "sk-xxx"                              # API key của bạn
+  base_url: "https://api.deepseek.com/v1/chat/completions"
+  model: "deepseek-v4-pro"
+  max_tokens: 8192                           # Đủ cho suy luận dài
+  temperature: 0.0
+  thinking_enabled: true
+  reasoning_effort: "medium"                 # Cân bằng giữa chất lượng và chi phí
+
+trading:
+  symbol: "XAUUSD"                           # Cặp tiền giao dịch
+  account_risk_pct: 0.5                      # % rủi ro tối đa trên 1 lệnh
+  min_rr: 1.5                               # R:R tối thiểu chấp nhận
+
+# ========== CẤU HÌNH DỮ LIỆU THEO KHUNG THỜI GIAN ==========
+data:
+  # Khung giao dịch chính (TTF) - quyết định tần suất phân tích
+  ttf_timeframe: "M5"
+  ttf_count: 60                              # Số nến lấy về
+  
+  # Khung cao (HTF) - xác định xu hướng lớn
+  htf_timeframe: "M30"
+  htf_count: 50                              # Cần >=70 để xác định PDH/PDL
+  
+  # Khung thực thi (LTF) - tìm điểm vào lệnh
+  ltf_timeframe: "M1"
+  ltf_count: 30
+
+telegram:
+  token: "YOUR_BOT_TOKEN"
+  chat_id_log: "-100xxx"                     # Nhóm log
+  chat_id_signal: "-100xxx"                  # Nhóm tín hiệu
+  status_interval_minutes: 60                # Gửi trạng thái bot mỗi X phút
+  send_hold_to_signal: false                 # true nếu muốn gửi cả HOLD
+
+prompt:
+  template_path: "prompt.txt"                # File prompt (đã có)
+
+paths:
+  log_file: "bot.log"
+  signal_history_file: "signal_history.jsonl"
+
+timezone_offset: 7                           # UTC+7 (giờ Hà Nội)
