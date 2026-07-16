@@ -1,0 +1,48 @@
+# ==================== CẤU HÌNH BOT YTC XAUUSD (MOBILE EDITION) ====================
+
+api:
+  provider: "google"
+  key: "xxx"                                  # API Key của bạn
+  base_url: "xxx"           # Endpoint OpenAI-compatible của Google
+  model: "gemini-3.5-flash"                                                                     # Model Gemini Flash mới nhất
+  max_tokens: 8192
+  temperature: 0.0
+  thinking_enabled: false
+  reasoning_effort: "none"
+
+# Cấu hình API lấy dữ liệu giá độc lập (không cần MT5)
+data_provider:
+  api_key: "xxx"       # API KEY CỦA TWELVE DATA VÀO ĐÂY (Đăng ký tại twelvedata.com)
+
+trading:
+  symbol: "xxx"                          # Cặp tiền giao dịch
+  account_risk_pct: 0.5                     # % rủi ro tối đa trên 1 lệnh
+  min_rr: 1.5                               # R:R tối thiểu chấp nhận
+  signal_timeframe: "M5"                    # Khung thời gian để gửi tín hiệu
+
+# ========== CẤU HÌNH DỮ LIỆU THEO KHUNG THỜI GIAN ==========
+data:
+  ttf_timeframe: "M5"
+  ttf_count: 40                              # Số nến lấy về
+  
+  htf_timeframe: "M30"
+  htf_count: 50                              # Số nến xác định xu hướng
+  
+  ltf_timeframe: "M1"
+  ltf_count: 20
+
+telegram:
+  token: "xxx"                                       # Token bot Telegram của bạn
+  chat_id_log: "-xxx"                                                                 # Nhóm log
+  chat_id_signal: "-xxx"                                                              # Nhóm tín hiệu
+  status_interval_minutes: 10                                                                   # Gửi trạng thái bot mỗi X phút
+  send_hold_to_signal: false                                                                    # true nếu muốn gửi cả HOLD
+
+prompt:
+  template_path: "prompt.txt"             # Đường dẫn file prompt
+
+paths:
+  log_file: "bot.log"                       # File ghi log hoạt động
+  signal_history_file: "signal_history.jsonl" # File lưu lịch sử tín hiệu
+
+timezone_offset: 7                           # UTC+7 (giờ Hà Nội)
